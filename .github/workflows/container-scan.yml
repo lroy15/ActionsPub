@@ -20,9 +20,6 @@ jobs:
           role-to-assume: arn:aws:iam::142037495766:role/GitHubAction-AssumeRoleWithAction
           role-session-name: GitHubAction-AssumeRoleWithAction
           aws-region: us-east-2
-      - name: Print AWS SSM
-        run: |
-          aws ssm get-parameter --name /github/actions/secret --with-decryption --query Parameter.Value --output text
       - name: print assumed role
         run: |
           aws sts get-caller-identity
