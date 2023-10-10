@@ -24,17 +24,21 @@ jobs:
           role-to-assume: arn:aws:iam::142037495766:role/GitHubAction-AssumeRoleWithAction
           role-session-name: GitHubAction-AssumeRoleWithAction
           aws-region: us-east-2
-      - name: print assumed role
-        run: |
-          aws sts get-caller-identity
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: list ecr images
+      - name: Get latest image digest
+        id: get-digest
         run: |
-          aws ecr describe-images --repository-name lol --region us-east-2 | jq '.imageDetails | sort_by(.imagePushedAt) | reverse'
+          DIGEST=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageDigest')
+          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
+
+      - name: Use the captured digest
+        run: |
+          echo "Captured Digest: $DIGEST"
+      # - name: list ecr images
+      #   run: |
+      #     aws ecr describe-images --repository-name lol --region us-east-2 | jq '.imageDetails | sort_by(.imagePushedAt) | reverse'
 
       # - name: Run Trivy vulnerability scanner
       #   uses: aquasecurity/trivy-action@master
