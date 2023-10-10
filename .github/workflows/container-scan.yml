@@ -30,8 +30,10 @@ jobs:
       - name: Get latest image digest
         id: get-digest
         run: |
-          DIGEST=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageDigest')
-          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
+          REPO=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].repositoryName')
+          echo "REPO=$REPO" >> $GITHUB_ENV
+          TAG=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageTags[0]')
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       # - name: list ecr images
       #   run: |
@@ -40,7 +42,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${DIGEST}
+          image-ref: ${ECRURL}/${REPO}:${TAG}
           format: "sarif"
           output: "trivy-results.sarif"
 
