@@ -32,19 +32,26 @@ jobs:
           echo "REPO=$REPO" >> $GITHUB_ENV
           TAG=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageTags[0]')
           echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: test fail
+        run: |
+          exit 1
 
+      - name: test success
+        if: success()
+        run: |
+          echo "hi"
       # - name: list ecr images
       #   run: |
       #     aws ecr describe-images --repository-name lol --region us-east-2 | jq '.imageDetails | sort_by(.imagePushedAt) | reverse'
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "${{ vars.ECRURL }}/${{ env.REPO }}:${{ env.TAG }}"
-          format: "sarif"
-          output: "trivy-results.sarif"
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: "${{ vars.ECRURL }}/${{ env.REPO }}:${{ env.TAG }}"
+      #     format: "sarif"
+      #     output: "trivy-results.sarif"
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results.sarif"
+      # - name: Upload Trivy scan results to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v2
+      #   with:
+      #     sarif_file: "trivy-results.sarif"
