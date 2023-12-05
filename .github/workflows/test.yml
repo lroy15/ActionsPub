@@ -10,3 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ github.actor }}
+      - run: echo ${{ github.triggering_actor }}
