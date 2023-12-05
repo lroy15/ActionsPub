@@ -1,57 +1,57 @@
 # on:
 #   schedule:
 #     - cron: "30 5 * * 1,3"
-name: build2
-on:
-  push:
-    branches:
-      - main
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
-        with:
-          aws-region: us-east-2
-          role-to-assume: arn:aws:iam::142037495766:role/GitHubAction-AssumeRoleWithAction
-          role-session-name: GitHubAction-AssumeRoleWithAction
+# name: build2
+# on:
+#   push:
+#     branches:
+#       - main
+# permissions:
+#   id-token: write
+#   contents: write
+#   security-events: write
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
+#         with:
+#           aws-region: us-east-2
+#           role-to-assume: arn:aws:iam::142037495766:role/GitHubAction-AssumeRoleWithAction
+#           role-session-name: GitHubAction-AssumeRoleWithAction
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-      - name: Get latest image digest
-        id: get-digest
-        run: |
-          REPO=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].repositoryName')
-          echo "REPO=$REPO" >> $GITHUB_ENV
-          TAG=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageTags[0]')
-          echo "TAG=$TAG" >> $GITHUB_ENV
-      - name: test fail
-        run: |
-          exit 1
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v2
+#       - name: Get latest image digest
+#         id: get-digest
+#         run: |
+#           REPO=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].repositoryName')
+#           echo "REPO=$REPO" >> $GITHUB_ENV
+#           TAG=$(aws ecr describe-images --repository-name lol --region us-east-2 | jq -r '.imageDetails | sort_by(.imagePushedAt) | reverse | .[0].imageTags[0]')
+#           echo "TAG=$TAG" >> $GITHUB_ENV
+#       - name: test fail
+#         run: |
+#           exit 1
 
-      - name: test success
-        if: success()
-        run: |
-          echo "hi"
-      # - name: list ecr images
-      #   run: |
-      #     aws ecr describe-images --repository-name lol --region us-east-2 | jq '.imageDetails | sort_by(.imagePushedAt) | reverse'
+#       - name: test success
+#         if: success()
+#         run: |
+#           echo "hi"
+#       # - name: list ecr images
+#       #   run: |
+#       #     aws ecr describe-images --repository-name lol --region us-east-2 | jq '.imageDetails | sort_by(.imagePushedAt) | reverse'
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: "${{ vars.ECRURL }}/${{ env.REPO }}:${{ env.TAG }}"
-      #     format: "sarif"
-      #     output: "trivy-results.sarif"
+#       # - name: Run Trivy vulnerability scanner
+#       #   uses: aquasecurity/trivy-action@master
+#       #   with:
+#       #     image-ref: "${{ vars.ECRURL }}/${{ env.REPO }}:${{ env.TAG }}"
+#       #     format: "sarif"
+#       #     output: "trivy-results.sarif"
 
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: "trivy-results.sarif"
+#       # - name: Upload Trivy scan results to GitHub Security tab
+#       #   uses: github/codeql-action/upload-sarif@v2
+#       #   with:
+#       #     sarif_file: "trivy-results.sarif"

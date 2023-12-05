@@ -1,0 +1,13 @@
+name: test github actor
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: test-echo
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.actor }}
+      - run: echo ${{ github.triggering_actor }}
