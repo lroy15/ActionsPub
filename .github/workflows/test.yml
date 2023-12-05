@@ -5,5 +5,8 @@ on:
     branches: [test]
 
 jobs:
-  name: test echo
-  run: echo ${{ github.actor }}
+  test:
+    name: test-echo
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.actor }}
