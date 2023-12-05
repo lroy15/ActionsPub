@@ -1,0 +1,9 @@
+name: test github actor
+
+on:
+  push:
+    branches: [test]
+
+jobs:
+  name: test echo
+  run: echo ${{ github.actor }}
